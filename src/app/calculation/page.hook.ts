@@ -12,6 +12,7 @@ export const useCalculationData = () => {
   const [selectedProvince, setSelectedProvince] = useState<string>("");
   const [tumbols, setTumbols] = useState<string[]>([]);
   const [selectedTumbol, setSelectedTumbol] = useState<string>("");
+  const [calculationResult, setCalculationResult] = useState<any>(null);
 
   const [isCustomArea, setIsCustomArea] = useState<boolean>(false);
   const [areaOptions] = useState<number[]>(
@@ -63,17 +64,16 @@ export const useCalculationData = () => {
     setTumbols(selectedProvinceData?.tumbols || []);
     setSelectedTumbol("");
   };
-
-  const calculateSolarEnergy = () => {
-    console.log("Click!");
-  };
+  
   return {
     setIsCustomArea,
     handleProvinceChange,
+    setCalculationResult,
     selectedProvince,
     provinces,
     tumbols,
     isCustomArea,
     areaOptions,
+    calculationResult,
   };
 };
