@@ -15,24 +15,49 @@ import { Separator } from "@/components/ui/separator";
 import { useForm, Controller } from "react-hook-form";
 
 import { useCalculationData } from "@/app/calculation/page.hook";
+import { Calculation } from "@/types/types";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 const SolarCalculation = () => {
   const {
     selectedProvince,
-    handleProvinceChange,
     provinces,
-    selectedTumbol,
-    setSelectedTumbol,
     tumbols,
     isCustomArea,
-    setIsCustomArea,
-    selectedArea,
-    setSelectedArea,
     areaOptions,
-    customArea,
-    setCustomArea,
-    calculateSolarEnergy,
+    handleProvinceChange,
+    setIsCustomArea,
   } = useCalculationData();
+
+  const { handleSubmit, control, setValue } = useForm<Calculation>();
+
+  const onSubmit = async (data: Calculation) => {
+    const area = isCustomArea ? data.customAreaValue : data.area;
+    const formData = {
+      province: data.province,
+      tumbol: data.tumbol,
+      area: area,
+    };
+    try {
+      const response = await fetch('/api/calculation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const responseData = await response.json();
+      console.log('Server Response:', responseData);
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <Card>
@@ -40,90 +65,133 @@ const SolarCalculation = () => {
           <CardTitle>Solar Panel Calculator</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
             <div>
               <Label>จังหวัด</Label>
-              <Select
-                value={selectedProvince}
-                onValueChange={handleProvinceChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="เลือกจังหวัด" />
-                </SelectTrigger>
-                <SelectContent>
-                  {provinces.map((data) => (
-                    <SelectItem key={data.province} value={data.province}>
-                      {data.province}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="province"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    onValueChange={(value) => {
+                      handleProvinceChange(value);
+                      setValue("province", value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกจังหวัด" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {provinces.map((data) => (
+                        <SelectItem key={data.province} value={data.province}>
+                          {data.province}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
+
             <div>
               <Label>ตำบล</Label>
-              <Select
-                value={selectedTumbol}
-                onValueChange={setSelectedTumbol}
-                disabled={!selectedProvince}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="เลือกตำบล" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tumbols.map((tumbol) => (
-                    <SelectItem key={tumbol} value={tumbol}>
-                      {tumbol}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="tumbol"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    disabled={!selectedProvince}
+                    onValueChange={(value) => setValue("tumbol", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกตำบล" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tumbols.map((tumbol) => (
+                        <SelectItem key={tumbol} value={tumbol}>
+                          {tumbol}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
+
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="customArea"
-                checked={isCustomArea}
-                onCheckedChange={() => setIsCustomArea(!isCustomArea)}
+              <Controller
+                name="customArea"
+                control={control}
+                defaultValue={false}
+                render={({ field }) => (
+                  <Checkbox
+                    id="customArea"
+                    checked={field.value}
+                    onCheckedChange={(checked: CheckedState) => {
+                      if (checked === true || checked === false) {
+                        field.onChange(checked);
+                        setIsCustomArea(checked);
+                      }
+                    }}
+                  />
+                )}
               />
               <Label htmlFor="customArea">กรอกจำนวนไร่เอง</Label>
             </div>
 
             {!isCustomArea ? (
-              <Select
-                value={selectedArea?.toString() || ""}
-                onValueChange={(value) => setSelectedArea(Number(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="เลือกจำนวนไร่" />
-                </SelectTrigger>
-                <SelectContent>
-                  {areaOptions.map((area) => (
-                    <SelectItem key={area} value={area.toString()}>
-                      {area} ไร่
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="area"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setValue("area", value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกจำนวนไร่" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {areaOptions.map((area) => (
+                        <SelectItem key={area} value={area.toString()}>
+                          {area} ไร่
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             ) : (
-              <Input
-                type="number"
-                placeholder="กรอกจำนวนไร่"
-                value={customArea}
-                onChange={(e) => setCustomArea(e.target.value)}
+              <Controller
+                name="customAreaValue"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value || ""}
+                    placeholder="กรอกจำนวนไร่"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(e);
+                      setValue("area", value);
+                    }}
+                  />
+                )}
               />
             )}
 
-            <Button
-              onClick={calculateSolarEnergy}
-              disabled={
-                !selectedProvince ||
-                !selectedTumbol ||
-                (!selectedArea && !customArea)
-              }
-            >
-              คำนวณ
-            </Button>
+            <Button type="submit">คำนวณ</Button>
             <Separator />
-          </div>
+          </form>
         </CardContent>
       </Card>
     </div>

@@ -17,8 +17,6 @@ export const useCalculationData = () => {
   const [areaOptions] = useState<number[]>(
     Array.from({ length: 10 }, (_, i) => i + 1)
   );
-  const [selectedArea, setSelectedArea] = useState<number | null>(null);
-  const [customArea, setCustomArea] = useState<string>("");
 
   useEffect(() => {
     fetch("/data/data.csv")
@@ -70,19 +68,12 @@ export const useCalculationData = () => {
     console.log("Click!");
   };
   return {
-    selectedProvince,
+    setIsCustomArea,
     handleProvinceChange,
+    selectedProvince,
     provinces,
-    selectedTumbol,
-    setSelectedTumbol,
     tumbols,
     isCustomArea,
-    setIsCustomArea,
-    selectedArea,
-    setSelectedArea,
     areaOptions,
-    customArea,
-    setCustomArea,
-    calculateSolarEnergy,
   };
 };
