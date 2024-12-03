@@ -86,9 +86,9 @@ const SolarCalculation = () => {
       setCalculationResult(responseData.data);
 
       const totalArea = responseData.data.area * 1600;
-      const areaUsed = responseData.data.numberOfPanels * 2;
-      const areaRemaining = totalArea - areaUsed;
-
+      const areaUsed = responseData.data.areaUsed;
+      const areaRemaining = responseData.data.areaRemaining;
+      
       setChartData({
         labels: ["พื้นที่ทั้งหมด", "พื้นที่ที่ใช้ไป", "พื้นที่ที่เหลือ"],
         datasets: [
@@ -250,6 +250,27 @@ const SolarCalculation = () => {
               <Card className="">
                 <CardContent>
                   <div className="mt-5">
+                    <p>
+                      ก๊าซเรือนกระจกที่ปล่อยออกมา:{" "}
+                      <span className="font-bold text-red-700">
+                        {calculationResult.ghg}
+                      </span>{" "}
+                      kg/CO₂e
+                    </p>
+                    <p>
+                      ปลูกต้นไม้ยูคาลิปตัส:{" "}
+                      <span className="font-bold text-gray-700">
+                        {calculationResult.requiredTreeCount}
+                      </span>{" "}
+                      ต้น
+                    </p>
+                    <p>
+                      ก๊าซเรือนกระจกคงเหลือ:{" "}
+                      <span className="font-bold text-green-700">
+                        {calculationResult.sum_GHG}
+                      </span>{" "}
+                      kg/CO₂e
+                    </p>
                     <p>
                       ความเข้มพลังงานแสงอาทิตย์:{" "}
                       <span className="font-bold text-green-700">
