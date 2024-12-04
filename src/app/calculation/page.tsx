@@ -53,6 +53,8 @@ const SolarCalculation = () => {
 
   const { handleSubmit, control, setValue, reset } = useForm<Calculation>();
   const [chartData, setChartData] = useState<any>(null);
+  const [chartDataElectric, setChartDataElectric] = useState<any>(null);
+  const [chartDataghg, setChartDatghg] = useState<any>(null);
 
   const handleClear = () => {
     reset();
@@ -88,7 +90,14 @@ const SolarCalculation = () => {
       const totalArea = responseData.data.area * 1600;
       const areaUsed = responseData.data.areaUsed;
       const areaRemaining = responseData.data.areaRemaining;
-      
+
+      const requiredElectricity = responseData.data.requiredElectricity;
+      const producedElectricity = responseData.data.producedElectricity;
+      const excessElectricity = responseData.data.excessElectricity;
+
+      const ghg = responseData.data.ghg;
+      const sum_GHG = responseData.data.sum_GHG;
+
       setChartData({
         labels: ["พื้นที่ทั้งหมด", "พื้นที่ที่ใช้ไป", "พื้นที่ที่เหลือ"],
         datasets: [
@@ -101,9 +110,52 @@ const SolarCalculation = () => {
           },
         ],
       });
+
+      setChartDataElectric({
+        labels: ["ไฟฟ้าที่ต้องการ", "ไฟฟ้าที่ผลิตได้", "ไฟฟ้าที่ผลิตเกิน"],
+        datasets: [
+          {
+            label: "ไฟฟ้า (kWh)",
+            data: [requiredElectricity, producedElectricity, excessElectricity],
+            backgroundColor: ["#f87171", "#34d399", "#039dfc"],
+            borderColor: ["#9b2c2c", "#047857", "#000000"],
+            borderWidth: 1,
+          },
+        ],
+      });
+
+      setChartDatghg({
+        labels: ["ก๊าซเรือนกระจกที่ปล่อยออกมา", "ก๊าซเรือนกระจกคงเหลือ"],
+        datasets: [
+          {
+            label: "ก๊าซเรือนกระจก (kg/CO₂e)",
+            data: [ghg, sum_GHG],
+            backgroundColor: ["#f87171", "#34d399"],
+            borderColor: ["#9b2c2c", "#047857"],
+            borderWidth: 1,
+          },
+        ],
+      });
     } catch (error) {
       console.error("Error submitting data:", error);
     }
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+      },
+    },
   };
 
   return (
@@ -247,9 +299,13 @@ const SolarCalculation = () => {
           {calculationResult && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold">ผลคำนวณ</h3>
-              <Card className="">
+              <Card>
                 <CardContent>
                   <div className="mt-5">
+                    {/* หมวดหมู่ 1: ก๊าซเรือนกระจก */}
+                    <h4 className="text-md font-bold underline text-blue-700">
+                      การปล่อยก๊าซเรือนกระจก
+                    </h4>
                     <p>
                       ก๊าซเรือนกระจกที่ปล่อยออกมา:{" "}
                       <span className="font-bold text-red-700">
@@ -271,6 +327,11 @@ const SolarCalculation = () => {
                       </span>{" "}
                       kg/CO₂e
                     </p>
+
+                    {/* หมวดหมู่ 2: พลังงานแสงอาทิตย์ */}
+                    <h4 className="text-md font-bold underline text-blue-700 mt-4">
+                      ข้อมูลพลังงานแสงอาทิตย์
+                    </h4>
                     <p>
                       ความเข้มพลังงานแสงอาทิตย์:{" "}
                       <span className="font-bold text-green-700">
@@ -285,6 +346,11 @@ const SolarCalculation = () => {
                       </span>{" "}
                       แผ่น
                     </p>
+
+                    {/* หมวดหมู่ 3: การใช้ไฟฟ้า */}
+                    <h4 className="text-md font-bold underline text-blue-700 mt-4">
+                      ข้อมูลการใช้ไฟฟ้า
+                    </h4>
                     <p>
                       จำนวนไฟฟ้าที่ต้องการ:{" "}
                       <span className="font-bold text-red-700">
@@ -306,6 +372,11 @@ const SolarCalculation = () => {
                       </span>{" "}
                       kWh
                     </p>
+
+                    {/* หมวดหมู่ 4: ข้อมูลพื้นที่ */}
+                    <h4 className="text-md font-bold underline text-blue-700 mt-4">
+                      ข้อมูลพื้นที่การติดตั้ง
+                    </h4>
                     <p>
                       พื้นที่ที่ใช้ในการติดตั้ง:{" "}
                       <span className="font-bold text-green-700">
@@ -327,12 +398,38 @@ const SolarCalculation = () => {
           )}
 
           {chartData && (
-            <div>
-              <div className="w-[70%] mx-auto">
-                <div className="mt-4">
-                  <Bar data={chartData} options={{ responsive: true }} />
-                </div>
+            <div className="mx-auto w-full sm:w-[90%] md:w-[80%] lg:w-[90%] space-y-4 mt-4 text-center">
+              {/* การเปรียบเทียบพื้นที่คงเหลือ */}
+              <div className="grid gap-4 lg:grid-cols-2 md:grid-cols-1">
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle>การเปรียบเทียบพื้นที่คงเหลือ</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Bar data={chartData} options={chartOptions} />
+                  </CardContent>
+                </Card>
+
+                {/* การเปรียบเทียบการผลิตไฟฟ้า */}
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle>การเปรียบเทียบการผลิตไฟฟ้า</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Bar data={chartDataElectric} options={chartOptions} />
+                  </CardContent>
+                </Card>
               </div>
+
+              {/* การเปรียบเทียบก๊าซเรือนกระจก */}
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle>การเปรียบเทียบก๊าซเรือนกระจก</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Bar data={chartDataghg} options={chartOptions} />
+                </CardContent>
+              </Card>
             </div>
           )}
         </CardContent>
