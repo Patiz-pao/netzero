@@ -12,11 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { useForm, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { useActiveTab } from "@/hooks/useActiveTab";
 
-import { useCalculationData } from "@/app/calculation/page.hook";
+import { useCalculationData } from "@/hooks/useCalculationData";
 import { Calculation } from "@/types/types";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import { Shield, AlertTriangle, Gavel, Scale, Clock } from "lucide-react";
 
 import {
   Chart as ChartJS,
@@ -28,7 +30,6 @@ import {
   LinearScale,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { useState } from "react";
 ChartJS.register(
   Title,
   Tooltip,
@@ -73,7 +74,7 @@ const SolarCalculation = () => {
     };
 
     console.log(formData);
-    
+
     try {
       const response = await fetch("/api/calculation", {
         method: "POST",
@@ -162,6 +163,8 @@ const SolarCalculation = () => {
     },
   };
 
+  const { activeTab, changeTab } = useActiveTab("overview");
+
   return (
     <div className="container mx-auto p-4">
       <Card>
@@ -230,7 +233,10 @@ const SolarCalculation = () => {
                 name="type"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} onValueChange={(value) => setValue("type", value)}>
+                  <Select
+                    {...field}
+                    onValueChange={(value) => setValue("type", value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="เลือกชนิดของพืช" />
                     </SelectTrigger>
@@ -317,7 +323,10 @@ const SolarCalculation = () => {
                 name="treeType"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} onValueChange={(value) => setValue("treeType", value)}>
+                  <Select
+                    {...field}
+                    onValueChange={(value) => setValue("treeType", value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="เลือกชนิดของต้นไม้" />
                     </SelectTrigger>
@@ -355,7 +364,7 @@ const SolarCalculation = () => {
                       kg/CO₂e
                     </p>
                     <p>
-                      ปลูกต้นไม้ยูคาลิปตัส:{" "}
+                      ปลูกต้นไม้:{" "}
                       <span className="font-bold text-gray-700">
                         {calculationResult.requiredTreeCount}
                       </span>{" "}
@@ -385,7 +394,7 @@ const SolarCalculation = () => {
                       <span className="font-bold text-red-700">
                         {calculationResult.numberOfPanels}
                       </span>{" "}
-                      แผ่น
+                      แผ่น (ขนาด 450W)
                     </p>
 
                     {/* การใช้ไฟฟ้า */}
@@ -437,10 +446,47 @@ const SolarCalculation = () => {
               </Card>
             </div>
           )}
+        </CardContent>
+      </Card>
 
-          {chartData && (
-            <div className="mx-auto w-full sm:w-[90%] md:w-[80%] lg:w-[90%] space-y-4 mt-4 text-center">
-              <div className="grid gap-4 lg:grid-cols-2 md:grid-cols-1">
+      {chartData && (
+        <div className="container px-4 my-8 mx-auto">
+          <div className="flex space-x-4 border-b">
+            <button
+              onClick={() => changeTab("electricity")}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === "electricity"
+                  ? "border-b-2 border-blue-900 text-blue-900"
+                  : "text-gray-600 hover:text-blue-900"
+              }`}
+            >
+              การเปรียบเทียบพื้นที่คงเหลือ
+            </button>
+            <button
+              onClick={() => changeTab("area")}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === "area"
+                  ? "border-b-2 border-blue-900 text-blue-900"
+                  : "text-gray-600 hover:text-blue-900"
+              }`}
+            >
+              การเปรียบเทียบการผลิตไฟฟ้า
+            </button>
+            <button
+              onClick={() => changeTab("ghg")}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === "ghg"
+                  ? "border-b-2 border-blue-900 text-blue-900"
+                  : "text-gray-600 hover:text-blue-900"
+              }`}
+            >
+              การเปรียบเทียบก๊าซเรือนกระจก
+            </button>
+          </div>
+
+          <div className="py-8 w-[80%] mx-auto">
+            {activeTab === "electricity" && (
+              <div className="space-y-6">
                 <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>การเปรียบเทียบพื้นที่คงเหลือ</CardTitle>
@@ -449,7 +495,11 @@ const SolarCalculation = () => {
                     <Bar data={chartData} options={chartOptions} />
                   </CardContent>
                 </Card>
+              </div>
+            )}
 
+            {activeTab === "area" && (
+              <div className="space-y-6">
                 <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>การเปรียบเทียบการผลิตไฟฟ้า</CardTitle>
@@ -459,19 +509,23 @@ const SolarCalculation = () => {
                   </CardContent>
                 </Card>
               </div>
+            )}
 
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>การเปรียบเทียบก๊าซเรือนกระจก</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Bar data={chartDataghg} options={chartOptions} />
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            {activeTab === "ghg" && (
+              <div className="space-y-6">
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle>การเปรียบเทียบก๊าซเรือนกระจก</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Bar data={chartDataghg} options={chartOptions} />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
