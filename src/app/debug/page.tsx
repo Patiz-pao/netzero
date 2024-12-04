@@ -15,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Controller } from "react-hook-form";
 import { useActiveTab } from "@/hooks/useActiveTab";
 
-import { useCalculationData } from "@/hooks/useCalculationData";
-import { Calculation } from "@/types/types";
+import { useCalculationData } from "@/hooks/useCalculationDataDebug";
+import { CalculationDebug } from "@/types/types";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
 import {
@@ -61,21 +61,23 @@ const SolarCalculation = () => {
     calculationResult,
   } = useCalculationData();
 
-  const onSubmit = async (data: Calculation) => {
+  const onSubmit = async (data: CalculationDebug) => {
     const area = isCustomArea ? data.customAreaValue : data.area;
     const formData = {
       province: data.province,
       tumbol: data.tumbol,
       area: area,
       type: data.type,
-
       treeType: data.treeType,
+      electric: data.electric,
+      solarEnergyIntensity: data.solarEnergyIntensity,
+      solarCell: data.solarCell || undefined,
     };
 
     console.log(formData);
 
     try {
-      const response = await fetch("/api/calculation", {
+      const response = await fetch("/api/calculation_debug", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -334,6 +336,72 @@ const SolarCalculation = () => {
                       <SelectItem value="mango">มะม่วง</SelectItem>
                     </SelectContent>
                   </Select>
+                )}
+              />
+            </div>
+
+            <div>
+              <Label>ไฟฟ้าที่ต้องการ</Label>
+              <Controller
+                name="electric"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value || ""}
+                    placeholder="กรอกไฟฟ้าที่ต้องการ"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(e);
+                      setValue("electric", value);
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            <div>
+              <Label>ค่าความเข้มของแสงอาทิตย์</Label>
+              <Controller
+                name="solarEnergyIntensity"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value || ""}
+                    placeholder="กรอกค่าความเข้มของแสงอาทิตย์"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(e);
+                      setValue("solarEnergyIntensity", value);
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            <div>
+              <Label>จำนวนแผงโซล่าเซลล์ที่ต้องการ</Label>
+              <Controller
+                name="solarCell"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value || ""}
+                    placeholder="กรอกจำนวนแผงโซล่าเซลล์ที่ต้องการ"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(e);
+                      setValue("solarCell", value);
+                    }}
+                  />
                 )}
               />
             </div>
