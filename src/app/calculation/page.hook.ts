@@ -77,6 +77,10 @@ export const useCalculationData = () => {
     setCalculationResult(null);
     setChartData(null);
     setIsCustomArea(false);
+    setValue("province", "");
+    setValue("tumbol", "");
+    setValue("type", "");
+    setValue("treeType", "");
   };
 
   return {
