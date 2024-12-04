@@ -43,6 +43,16 @@ const SolarCalculation = () => {
     setIsCustomArea,
     handleProvinceChange,
     setCalculationResult,
+    handleClear,
+    handleSubmit,
+    setValue,
+    setChartDatghg,
+    setChartDataElectric,
+    setChartData,
+    chartDataghg,
+    chartDataElectric,
+    chartData,
+    control,
     selectedProvince,
     provinces,
     tumbols,
@@ -51,25 +61,19 @@ const SolarCalculation = () => {
     calculationResult,
   } = useCalculationData();
 
-  const { handleSubmit, control, setValue, reset } = useForm<Calculation>();
-  const [chartData, setChartData] = useState<any>(null);
-  const [chartDataElectric, setChartDataElectric] = useState<any>(null);
-  const [chartDataghg, setChartDatghg] = useState<any>(null);
-
-  const handleClear = () => {
-    reset();
-    setCalculationResult(null);
-    setChartData(null);
-    setIsCustomArea(false);
-  };
-
   const onSubmit = async (data: Calculation) => {
     const area = isCustomArea ? data.customAreaValue : data.area;
     const formData = {
       province: data.province,
       tumbol: data.tumbol,
       area: area,
+      type: data.type,
+
+      treeType: data.treeType,
     };
+
+    console.log(formData);
+    
     try {
       const response = await fetch("/api/calculation", {
         method: "POST",
@@ -220,6 +224,24 @@ const SolarCalculation = () => {
               />
             </div>
 
+            <div>
+              <Label>พืชที่ต้องการทำเกษตร</Label>
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} onValueChange={(value) => setValue("type", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกชนิดของพืช" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rice">ข้าว</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
             <div className="flex items-center space-x-2">
               <Controller
                 name="customArea"
@@ -289,6 +311,25 @@ const SolarCalculation = () => {
               />
             )}
 
+            <div>
+              <Label>ชนิดของต้นไม้ที่ปลูก</Label>
+              <Controller
+                name="treeType"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} onValueChange={(value) => setValue("treeType", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกชนิดของต้นไม้" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="eucalyptus">ยูคาลิปตัส</SelectItem>
+                      <SelectItem value="mango">มะม่วง</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
             <Button type="submit">คำนวณ</Button>
             <Button type="button" variant="outline" onClick={handleClear}>
               Clear
@@ -302,7 +343,7 @@ const SolarCalculation = () => {
               <Card>
                 <CardContent>
                   <div className="mt-5">
-                    {/* หมวดหมู่ 1: ก๊าซเรือนกระจก */}
+                    {/* ก๊าซเรือนกระจก */}
                     <h4 className="text-md font-bold underline text-blue-700">
                       การปล่อยก๊าซเรือนกระจก
                     </h4>
@@ -328,7 +369,7 @@ const SolarCalculation = () => {
                       kg/CO₂e
                     </p>
 
-                    {/* หมวดหมู่ 2: พลังงานแสงอาทิตย์ */}
+                    {/* พลังงานแสงอาทิตย์ */}
                     <h4 className="text-md font-bold underline text-blue-700 mt-4">
                       ข้อมูลพลังงานแสงอาทิตย์
                     </h4>
@@ -347,7 +388,7 @@ const SolarCalculation = () => {
                       แผ่น
                     </p>
 
-                    {/* หมวดหมู่ 3: การใช้ไฟฟ้า */}
+                    {/* การใช้ไฟฟ้า */}
                     <h4 className="text-md font-bold underline text-blue-700 mt-4">
                       ข้อมูลการใช้ไฟฟ้า
                     </h4>
@@ -373,7 +414,7 @@ const SolarCalculation = () => {
                       kWh
                     </p>
 
-                    {/* หมวดหมู่ 4: ข้อมูลพื้นที่ */}
+                    {/* ข้อมูลพื้นที่ */}
                     <h4 className="text-md font-bold underline text-blue-700 mt-4">
                       ข้อมูลพื้นที่การติดตั้ง
                     </h4>
@@ -399,7 +440,6 @@ const SolarCalculation = () => {
 
           {chartData && (
             <div className="mx-auto w-full sm:w-[90%] md:w-[80%] lg:w-[90%] space-y-4 mt-4 text-center">
-              {/* การเปรียบเทียบพื้นที่คงเหลือ */}
               <div className="grid gap-4 lg:grid-cols-2 md:grid-cols-1">
                 <Card className="shadow-lg">
                   <CardHeader>
@@ -410,7 +450,6 @@ const SolarCalculation = () => {
                   </CardContent>
                 </Card>
 
-                {/* การเปรียบเทียบการผลิตไฟฟ้า */}
                 <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>การเปรียบเทียบการผลิตไฟฟ้า</CardTitle>
@@ -421,7 +460,6 @@ const SolarCalculation = () => {
                 </Card>
               </div>
 
-              {/* การเปรียบเทียบก๊าซเรือนกระจก */}
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle>การเปรียบเทียบก๊าซเรือนกระจก</CardTitle>

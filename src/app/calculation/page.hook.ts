@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Papa from "papaparse";
+import { useForm } from "react-hook-form";
+import { Calculation } from "@/types/types";
 
 interface Province {
   province: string;
@@ -64,11 +66,33 @@ export const useCalculationData = () => {
     setTumbols(selectedProvinceData?.tumbols || []);
     setSelectedTumbol("");
   };
-  
+
+  const { handleSubmit, control, setValue, reset } = useForm<Calculation>();
+  const [chartData, setChartData] = useState<any>(null);
+  const [chartDataElectric, setChartDataElectric] = useState<any>(null);
+  const [chartDataghg, setChartDatghg] = useState<any>(null);
+
+  const handleClear = () => {
+    reset();
+    setCalculationResult(null);
+    setChartData(null);
+    setIsCustomArea(false);
+  };
+
   return {
     setIsCustomArea,
     handleProvinceChange,
     setCalculationResult,
+    setChartData,
+    handleClear,
+    handleSubmit,
+    setValue,
+    setChartDatghg,
+    setChartDataElectric,
+    chartDataghg,
+    chartDataElectric,
+    chartData,
+    control,
     selectedProvince,
     provinces,
     tumbols,

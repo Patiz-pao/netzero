@@ -4,4 +4,6 @@ export interface Calculation {
   area: string;
   customAreaValue?: string;
   customArea?: boolean;
+  type: string;
+  treeType: string;
 }
