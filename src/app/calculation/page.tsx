@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Controller } from "react-hook-form";
-import { useActiveTab } from "@/hooks/useActiveTab";
 
 import { useCalculationData } from "@/hooks/useCalculationData";
 import { Calculation } from "@/types/types";
@@ -49,6 +48,8 @@ const SolarCalculation = () => {
     setChartDatghg,
     setChartDataElectric,
     setChartData,
+    changeTab,
+    activeTab,
     chartDataghg,
     chartDataElectric,
     chartData,
@@ -140,6 +141,8 @@ const SolarCalculation = () => {
           },
         ],
       });
+
+      changeTab("electricity");
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -161,8 +164,6 @@ const SolarCalculation = () => {
       },
     },
   };
-
-  const { activeTab, changeTab } = useActiveTab("overview");
 
   return (
     <div className="container mx-auto p-4">

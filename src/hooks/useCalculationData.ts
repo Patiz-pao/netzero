@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Papa from "papaparse";
 import { useForm } from "react-hook-form";
 import { Calculation } from "@/types/types";
+import { useActiveTab } from "@/hooks/useActiveTab";
 
 interface Province {
   province: string;
@@ -15,6 +16,8 @@ export const useCalculationData = () => {
   const [tumbols, setTumbols] = useState<string[]>([]);
   const [selectedTumbol, setSelectedTumbol] = useState<string>("");
   const [calculationResult, setCalculationResult] = useState<any>(null);
+
+  const { activeTab, changeTab } = useActiveTab("electricity");
 
   const [isCustomArea, setIsCustomArea] = useState<boolean>(false);
   const [areaOptions] = useState<number[]>(
@@ -93,6 +96,8 @@ export const useCalculationData = () => {
     setValue,
     setChartDatghg,
     setChartDataElectric,
+    changeTab,
+    activeTab,
     chartDataghg,
     chartDataElectric,
     chartData,

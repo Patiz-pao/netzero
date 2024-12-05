@@ -43,12 +43,14 @@ const SolarCalculation = () => {
     setIsCustomArea,
     handleProvinceChange,
     setCalculationResult,
+    setChartData,
     handleClear,
     handleSubmit,
     setValue,
     setChartDatghg,
     setChartDataElectric,
-    setChartData,
+    changeTab,
+    activeTab,
     chartDataghg,
     chartDataElectric,
     chartData,
@@ -143,6 +145,8 @@ const SolarCalculation = () => {
           },
         ],
       });
+
+      changeTab("electricity");
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -164,8 +168,6 @@ const SolarCalculation = () => {
       },
     },
   };
-
-  const { activeTab, changeTab } = useActiveTab("overview");
 
   return (
     <div className="container mx-auto p-4">
