@@ -465,7 +465,9 @@ const SolarCalculation = () => {
                     <p>
                       ก๊าซเรือนกระจกคงเหลือ:{" "}
                       <span className="font-bold text-green-700">
-                        {calculationResult.sum_GHG}
+                        {calculationResult.sum_GHG < 0
+                          ? `+${Math.abs(calculationResult.sum_GHG)}`
+                          : calculationResult.sum_GHG}
                       </span>{" "}
                       kg/CO₂e
                     </p>

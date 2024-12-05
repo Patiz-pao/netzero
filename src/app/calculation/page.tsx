@@ -173,33 +173,33 @@ const SolarCalculation = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-          <div>
+            <div>
               <Label>จังหวัด</Label>
               <Controller
-              name="province"
-              control={control}
-              render={({ field }) => (
-                <Select
-                {...field}
-                onValueChange={(value) => {
-                  handleProvinceChange(value);
-                  setValue("province", value);
-                }}
-                >
-                <SelectTrigger>
-                  <SelectValue placeholder="เลือกจังหวัด" />
-                </SelectTrigger>
-                <SelectContent>
-                  {provinces
-                  .filter((data) => data.province === "Pathum Thani")
-                  .map((data) => (
-                    <SelectItem key={data.province} value={data.province}>
-                    {data.province}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-                </Select>
-              )}
+                name="province"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    onValueChange={(value) => {
+                      handleProvinceChange(value);
+                      setValue("province", value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกจังหวัด" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {provinces
+                        .filter((data) => data.province === "Pathum Thani")
+                        .map((data) => (
+                          <SelectItem key={data.province} value={data.province}>
+                            {data.province}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
               />
             </div>
             <div>
@@ -374,7 +374,9 @@ const SolarCalculation = () => {
                     <p>
                       ก๊าซเรือนกระจกคงเหลือ:{" "}
                       <span className="font-bold text-green-700">
-                        {calculationResult.sum_GHG}
+                        {calculationResult.sum_GHG < 0
+                          ? `+${Math.abs(calculationResult.sum_GHG)}`
+                          : calculationResult.sum_GHG}
                       </span>{" "}
                       kg/CO₂e
                     </p>
