@@ -49,6 +49,8 @@ const SolarCalculation = () => {
     setChartDataElectric,
     setChartData,
     changeTab,
+    setLoading,
+    loading,
     activeTab,
     chartDataghg,
     chartDataElectric,
@@ -76,7 +78,7 @@ const SolarCalculation = () => {
     console.log(formData);
 
     try {
-      const response = await fetch("/api/calculation", {
+      const response = await fetch("/api/calculate-rice", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -340,8 +342,15 @@ const SolarCalculation = () => {
               />
             </div>
 
-            <Button type="submit">คำนวณ</Button>
-            <Button type="button" variant="outline" onClick={handleClear}>
+            <Button type="submit" disabled={loading}>
+              {loading ? "กำลังคำนวณ..." : "คำนวณ"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClear}
+              disabled={loading}
+            >
               Clear
             </Button>
             <Separator />

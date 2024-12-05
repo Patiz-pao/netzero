@@ -80,7 +80,7 @@ const SolarCalculation = () => {
     console.log(formData);
 
     try {
-      const response = await fetch("/api/calculation_debug", {
+      const response = await fetch("/api/calculate-rice-debug", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

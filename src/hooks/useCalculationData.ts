@@ -75,6 +75,8 @@ export const useCalculationData = () => {
   const [chartDataElectric, setChartDataElectric] = useState<any>(null);
   const [chartDataghg, setChartDatghg] = useState<any>(null);
 
+  const [loading, setLoading] = useState(false);
+
   const handleClear = () => {
     reset();
     setCalculationResult(null);
@@ -97,6 +99,8 @@ export const useCalculationData = () => {
     setChartDatghg,
     setChartDataElectric,
     changeTab,
+    setLoading,
+    loading,
     activeTab,
     chartDataghg,
     chartDataElectric,
