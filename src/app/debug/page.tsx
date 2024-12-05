@@ -72,6 +72,7 @@ const SolarCalculation = () => {
       electric: data.electric,
       solarEnergyIntensity: data.solarEnergyIntensity,
       solarCell: data.solarCell || undefined,
+      day: data.day,
     };
 
     console.log(formData);
@@ -334,6 +335,28 @@ const SolarCalculation = () => {
                     <SelectContent>
                       <SelectItem value="eucalyptus">ยูคาลิปตัส</SelectItem>
                       <SelectItem value="mango">มะม่วง</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div>
+              <Label>จำนวนวัน</Label>
+              <Controller
+                name="day"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    onValueChange={(value) => setValue("day", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกจำนวนวัน" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="120">120 วัน</SelectItem>
+                      <SelectItem value="180">180 วัน</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

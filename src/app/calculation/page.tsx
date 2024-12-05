@@ -172,34 +172,35 @@ const SolarCalculation = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-            <div>
+          <div>
               <Label>จังหวัด</Label>
               <Controller
-                name="province"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    onValueChange={(value) => {
-                      handleProvinceChange(value);
-                      setValue("province", value);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="เลือกจังหวัด" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {provinces.map((data) => (
-                        <SelectItem key={data.province} value={data.province}>
-                          {data.province}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+              name="province"
+              control={control}
+              render={({ field }) => (
+                <Select
+                {...field}
+                onValueChange={(value) => {
+                  handleProvinceChange(value);
+                  setValue("province", value);
+                }}
+                >
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกจังหวัด" />
+                </SelectTrigger>
+                <SelectContent>
+                  {provinces
+                  .filter((data) => data.province === "Pathum Thani")
+                  .map((data) => (
+                    <SelectItem key={data.province} value={data.province}>
+                    {data.province}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+                </Select>
+              )}
               />
             </div>
-
             <div>
               <Label>ตำบล</Label>
               <Controller

@@ -19,4 +19,5 @@ export interface CalculationDebug {
   electric: string;
   solarEnergyIntensity: string;
   solarCell?: string;
+  day: string;
 }
