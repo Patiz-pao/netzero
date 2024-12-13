@@ -71,8 +71,8 @@ const SolarCalculation = () => {
       tumbol: data.tumbol,
       area: area,
       type: data.type,
-
       treeType: data.treeType,
+      solarCell: data.solarCell || undefined,
     };
 
     console.log(formData);
@@ -319,6 +319,28 @@ const SolarCalculation = () => {
                 )}
               />
             )}
+
+            <div>
+              <Label>จำนวนแผงโซล่าเซลล์ที่ต้องการ</Label>
+              <Controller
+                name="solarCell"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value || ""}
+                    placeholder="กรอกจำนวนแผงโซล่าเซลล์ที่ต้องการ"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(e);
+                      setValue("solarCell", value);
+                    }}
+                  />
+                )}
+              />
+            </div>
 
             <div>
               <Label>ชนิดของต้นไม้ที่ปลูก</Label>

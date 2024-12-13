@@ -6,6 +6,7 @@ export interface Calculation {
   customArea?: boolean;
   type: string;
   treeType: string;
+  solarCell?: string;
 }
 
 export interface CalculationDebug {
